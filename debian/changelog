@@ -1,0 +1,19 @@
+opensource.org-api (0.3) osi-jessie; urgency=medium
+
+  * Add in a redirect root from / to the API endpoint
+  * Add in SIGHUP handler to reload the JSON
+
+ -- Paul Tagliamonte <paultag@opensource.org>  Fri, 22 Apr 2016 14:46:11 -0400
+
+opensource.org-api (0.2) osi-jessie; urgency=medium
+
+  * add myself as an uploader
+  * rename /usr/bin/api -> /usr/bin/opensource.org-api
+
+ -- Stefano Zacchiroli <zack@opensource.org>  Thu, 21 Apr 2016 17:13:35 -0400
+
+opensource.org-api (0.1) osi-jessie; urgency=medium
+
+  * Initial release.
+
+ -- Paul Tagliamonte <paultag@opensource.org>  Thu, 21 Apr 2016 11:17:46 -0400

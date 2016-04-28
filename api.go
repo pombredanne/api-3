@@ -1,16 +1,16 @@
-/* {{{ Copyright (c) Paul R. Tagliamonte <paultag@opensource.org>, 2015
+/* {{{ Copyright (c) Paul R. Tagliamonte <paultag@opensource.org>, 2015-2016
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. }}} */
 
 package main
@@ -19,8 +19,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-
-	"github.com/opensourceorg/api/license"
 )
 
 //
@@ -44,22 +42,18 @@ func writeError(w http.ResponseWriter, message string, code int) error {
 
 func main() {
 	mux := http.NewServeMux()
-	licenses, err := license.LoadLicensesFiles(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
+	blob := Blobs{}
 
-	licenseIdMap := licenses.GetIdMap()
-	licenseTagMap := licenses.GetTagMap()
+	go Reloader(os.Args[1], &blob)
 
 	licensesEndpoint := "/licenses/"
 	mux.HandleFunc(licensesEndpoint, func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path == licensesEndpoint {
-			writeJSON(w, licenses, 200)
+			writeJSON(w, blob.Licenses, 200)
 			return
 		}
 		path := req.URL.Path[len(licensesEndpoint):]
-		if licenses, ok := licenseTagMap[path]; ok {
+		if licenses, ok := blob.LicenseTagMap[path]; ok {
 			writeJSON(w, licenses, 200)
 			return
 		}
@@ -69,7 +63,7 @@ func main() {
 	licenseEndpoint := "/license/"
 	mux.HandleFunc(licenseEndpoint, func(w http.ResponseWriter, req *http.Request) {
 		path := req.URL.Path[len(licenseEndpoint):]
-		if license, ok := licenseIdMap[path]; ok {
+		if license, ok := blob.LicenseIdMap[path]; ok {
 			writeJSON(w, license, 200)
 			return
 		}
